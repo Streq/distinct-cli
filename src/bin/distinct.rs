@@ -1,8 +1,8 @@
 use clap::Parser;
-use std::fs::File;
-use std::io;
-use std::io::{BufRead, BufReader};
+use distinct::get_reader;
 use indexmap::IndexSet;
+use std::io::BufRead;
+
 /// Get distinct lines from stdin or file
 #[derive(Parser)]
 struct Args {
@@ -10,12 +10,9 @@ struct Args {
     file: Option<String>,
 }
 fn main() {
-    let args = Args::parse();
+    let Args { file } = Args::parse();
 
-    let reader: Box<dyn BufRead> = match &args.file {
-        Some(filename) => Box::new(BufReader::new(File::open(filename).unwrap())),
-        None => Box::new(BufReader::new(io::stdin())),
-    };
+    let reader = get_reader(file);
 
     let set = reader
         .lines()
